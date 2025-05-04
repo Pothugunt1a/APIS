@@ -20,8 +20,8 @@ authors = ["Your Name <your.email@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-# Add your dependencies here
-# e.g., requests = "^2.31.0"
+gunicorn = "^21.2.0"  # or the latest version
+
 
 [tool.poetry.dev-dependencies]
 # Add dev dependencies here
