@@ -20,7 +20,8 @@ authors = ["Your Name <your.email@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-gunicorn = "^21.2.0"  # or the latest version
+flask = "^2.3.0"  # or latest version
+gunicorn = "^21.2.0"
 
 
 [tool.poetry.dev-dependencies]
