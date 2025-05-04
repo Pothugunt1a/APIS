@@ -10,3 +10,23 @@ dependencies = [
     "flask-cors>=5.0.1",
     "python-dotenv>=1.1.0",
 ]
+
+
+[tool.poetry]
+name = "your-project-name"
+version = "0.1.0"
+description = "Your project description"
+authors = ["Your Name <your.email@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# Add your dependencies here
+# e.g., requests = "^2.31.0"
+
+[tool.poetry.dev-dependencies]
+# Add dev dependencies here
+# e.g., pytest = "^7.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
