@@ -36,6 +36,60 @@ class Registration(db.Model):
 
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+
+# Testing imports
+import unittest
+from flask_testing import TestCase
+
+class TestConfig:
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class ApiTests(TestCase):
+    def create_app(self):
+        app.config.from_object(TestConfig)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_donation_create(self):
+        response = self.client.post('/api/donate', json={
+            'name': 'Test Donor',
+            'amount': 100,
+            'email': 'test@example.com',
+            'message': 'Test donation'
+        })
+        self.assertEqual(response.status_code, 201)
+
+    def test_registration_create(self):
+        response = self.client.post('/api/register', json={
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'john@example.com',
+            'contact': '1234567890',
+            'primary_address': '123 Main St',
+            'city': 'Test City',
+            'state': 'TS',
+            'zipcode': '12345'
+        })
+        self.assertEqual(response.status_code, 201)
+
+    def test_get_donations(self):
+        response = self.client.get('/api/donations')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_registrations(self):
+        response = self.client.get('/api/registrations')
+        self.assertEqual(response.status_code, 200)
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -241,6 +295,72 @@ def remove_from_cart(cart_item_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
+
+# Artist Authentication APIs
+@app.route('/api/artists/login', methods=['POST'])
+def artist_login():
+    data = request.json
+    try:
+        # Add real authentication logic here
+        return jsonify({
+            "token": "sample_token",
+            "artistId": 1
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 401
+
+@app.route('/api/artists/register', methods=['POST'])
+def artist_register():
+    data = request.json
+    try:
+        artist = Artist(
+            username=data['email'],
+            email=data['email'],
+            name=f"{data['firstName']} {data['lastName']}",
+            bio=data.get('bio', '')
+        )
+        db.session.add(artist)
+        db.session.commit()
+        return jsonify({
+            "message": "Artist registered successfully",
+            "artistId": artist.id
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+
+# Event Management APIs
+@app.route('/api/events', methods=['GET', 'POST'])
+def manage_events():
+    if request.method == 'GET':
+        events = Event.query.all()
+        return jsonify([{
+            'id': e.id,
+            'title': e.title,
+            'description': e.description,
+            'date': e.date.isoformat()
+        } for e in events])
+    else:
+        data = request.json
+        try:
+            event = Event(
+                title=data['title'],
+                description=data['description'],
+                date=data['date']
+            )
+            db.session.add(event)
+            db.session.commit()
+            return jsonify({"message": "Event created"}), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 400
+
+if __name__ == '__main__':
+    # Run tests if in test mode
+    if app.config.get('TESTING'):
+        unittest.main()
+    else:
+        app.run(host='0.0.0.0', port=5000)
 
 
 # Authentication APIs
