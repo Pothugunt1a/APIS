@@ -8,8 +8,9 @@ CORS(app)
 
 # Database configuration
 
-app.config\['SQLALCHEMY\_DATABASE\_URI'] = 'sqlite:///shashikala.db'
-app.config\['SQLALCHEMY\_TRACK\_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shashikala.db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Database Models
